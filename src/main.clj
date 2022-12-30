@@ -47,6 +47,19 @@
          :response (created new-list "Location" url)
          :tx-data [assoc db-id new-list])))})
 
+(defn find-list-by-id [dbval db-id]
+  (get dbval db-id))
+
+(def list-view
+  {:name :list-view
+   :enter
+   (fn [context]
+     (if-let [db-id (get-in context [:request :path-params :list-id])]
+       (if-let [the-list (find-list-by-id (get-in context [:request :database]) db-id)]
+         (assoc context :result the-list)
+         context)
+       context))})
+
 (defonce database (atom {}))
 
 (def db-interceptor
