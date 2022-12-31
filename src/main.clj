@@ -78,6 +78,17 @@
 (defn test-request [verb url]
   (test/response-for (::http/service-fn @main/server) verb url))
 
+(def entity-render
+  {:name :entity-render
+   :leave
+   (fn [context]
+     (if-let [item (:result context)]
+       (assoc context :response (ok item))
+       context))})
+
+(defn find-list-item-by-ids [dbval list-id item-id]
+  (get-in dbval [list-id :items item-id] nil))
+
 (def routes
   (route/expand-routes
     #{["/todo"                    :post   [db-interceptor list-create]]
